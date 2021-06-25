@@ -126,13 +126,13 @@ public class Computer{
     }
     public func concurrent2d(encoder:MTLComputeCommandEncoder,size:MTLSize){
         let w = Int(sqrt(Double(self.leaf.device.maxThreadsPerThreadgroup.width)))
-        if(size.width * size.height > self.leaf.device.maxThreadsPerThreadgroup.width){
+        if(min(size.width , size.height) > w){
             let x = Int(ceil(Float(size.width) / Float(w)))
             let y = Int(ceil(Float(size.height) / Float(w)))
             let s = MTLSize(width: x, height: y, depth: 1)
             encoder.dispatchThreadgroups(s, threadsPerThreadgroup: MTLSize(width: w, height: w, depth: 1))
         }else{
-            encoder.dispatchThreadgroups(size, threadsPerThreadgroup: MTLSize(width: 1, height: 1, depth: 1))
+            encoder.dispatchThreadgroups(size, threadsPerThreadgroup: MTLSize(width:1, height: 1, depth: 1))
         }
     }
 
