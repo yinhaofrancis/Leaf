@@ -13,6 +13,8 @@ public class Leaf{
     
     public typealias CommandBuild = (Leaf,MTLCommandBuffer)->Void
     
+    public typealias Complete = (MTLCommandBuffer)->Void
+    
    var runQueue:DispatchQueue = DispatchQueue(label: "Leaf.Configure")
     
     public init(capcity:Int = 1) throws{
@@ -31,21 +33,18 @@ public class Leaf{
     
     private var queue:MTLCommandQueue
     
-    public func begin(waiteComplete:Bool = true,call:CommandBuild,complete:@escaping (MTLCommandBuffer)->Void) throws{
-       
+    public func begin(call:CommandBuild,complete: Complete? = nil) throws{
         guard let buffer = queue.makeCommandBuffer() else {
             throw NSError(domain: "create buffer fail", code: 2, userInfo: nil)
         }
         call(self,buffer)
-        buffer.commit()
-        
-        if(!waiteComplete){
+        if let completeCall = complete{
             buffer.addCompletedHandler { e in
-                complete(e)
+                completeCall(e)
             }
+            buffer.commit()
         }else{
-            buffer.waitUntilCompleted()
-            complete(buffer)
+            buffer.commit()
         }
     }
     public func perform(call:@escaping ()->Void){
