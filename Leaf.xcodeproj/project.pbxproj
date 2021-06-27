@@ -16,6 +16,8 @@
 		A98E87412685B04B0065E3EA /* Leaf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98E871B26856CA00065E3EA /* Leaf.framework */; };
 		A98E87422685B04B0065E3EA /* Leaf.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A98E871B26856CA00065E3EA /* Leaf.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A98E87472685B06F0065E3EA /* run.metal in Sources */ = {isa = PBXBuildFile; fileRef = A98E87462685B06F0065E3EA /* run.metal */; };
+		A99631322688B324004504B0 /* Computer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99631312688B324004504B0 /* Computer.swift */; };
+		A99631342688B353004504B0 /* Render.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99631332688B353004504B0 /* Render.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,8 @@
 		A98E873A2685ACDA0065E3EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A98E873C2685ACDA0065E3EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A98E87462685B06F0065E3EA /* run.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = run.metal; sourceTree = "<group>"; };
+		A99631312688B324004504B0 /* Computer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Computer.swift; sourceTree = "<group>"; };
+		A99631332688B353004504B0 /* Render.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Render.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +103,8 @@
 			children = (
 				A98E871F26856CA00065E3EA /* Info.plist */,
 				A98E872626856CD30065E3EA /* Leaf.swift */,
+				A99631332688B353004504B0 /* Render.swift */,
+				A99631312688B324004504B0 /* Computer.swift */,
 			);
 			path = Leaf;
 			sourceTree = "<group>";
@@ -236,7 +242,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A99631322688B324004504B0 /* Computer.swift in Sources */,
 				A98E872726856CD30065E3EA /* Leaf.swift in Sources */,
+				A99631342688B353004504B0 /* Render.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

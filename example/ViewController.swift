@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let lib = com.leaf.defaultLibrary{
-            com.begin(function: "go", lib: lib,size:MTLSize(width: a.count ,height: 1 ,depth: 1)) { c, e in
+            try? com.begin(function: "go", lib: lib,size:MTLSize(width: a.count ,height: 1 ,depth: 1)) { c, e in
                 c.loadByte(encoder: e, byte: self.a, len: MemoryLayout<Float>.stride * self.a.count, index: 0)
                 c.loadBuffer(encoder: e, buffer: self.b, index: 1)
             } complete: { c in
