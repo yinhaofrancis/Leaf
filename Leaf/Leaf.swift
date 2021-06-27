@@ -33,10 +33,8 @@ public class Leaf{
     
     private var queue:MTLCommandQueue
     
-    public func begin(call:CommandBuild,complete: Complete? = nil) throws{
-        guard let buffer = queue.makeCommandBuffer() else {
-            throw NSError(domain: "create buffer fail", code: 2, userInfo: nil)
-        }
+    public func beginAsync(call:CommandBuild,complete: Complete? = nil) throws{
+        let buffer = try self.begin()
         call(self,buffer)
         if let completeCall = complete{
             buffer.addCompletedHandler { e in
@@ -47,6 +45,18 @@ public class Leaf{
             buffer.commit()
         }
     }
+    public func begin() throws->MTLCommandBuffer{
+        guard let buffer = queue.makeCommandBuffer() else {
+            throw NSError(domain: "create buffer fail", code: 2, userInfo: nil)
+        }
+        return buffer
+    }
+    
+    public func commit(buffer:MTLCommandBuffer){
+        buffer.commit()
+        buffer.waitUntilCompleted()
+    }
+    
     public func perform(call:@escaping ()->Void){
         self.runQueue.async {
             call()
@@ -108,7 +118,7 @@ public class Computer{
     }
     public func begin(function:String,lib:MTLLibrary,size:MTLSize,encoder: @escaping EncodeBuild,complete:@escaping EncodeComplete){
         self.leaf.perform {
-            try? self.leaf.begin(call: { leaf, buffer in
+            try? self.leaf.beginAsync(call: { leaf, buffer in
                 try? self.compute(comandBuffer: buffer, encoder: { c, enc in
                     guard let state = try? self.loadShader(encoder: enc, name: function, lib: lib) else {
                         complete(false)
