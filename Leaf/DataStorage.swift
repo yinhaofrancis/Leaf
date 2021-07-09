@@ -129,21 +129,105 @@ public class DataStorage{
     }
 }
 
+public protocol TaskHandle{
+    
+    func handleResponse(response:HTTPURLResponse)->Bool
+    
+    func handleData(data:Data)
+    
+    func handleComplete(error: Error?)
+    
+    init(url:URL,session:DownloadSession<Self>) throws
+    
+}
 
-public class DownloadTask{
-    var storage:DataStorage = DataStorage()
-    var size:UInt64
-    var url:URL
+final public class DownloadTask:TaskHandle{
 
-    public init(url:URL) {
+    public required init(url:URL, session: DownloadSession<DownloadTask>) throws {
         self.url = url
         self.size = 0
+        self.name = try DataStorage.md5(str: url.absoluteString)
+        self.session = session
+    }
+    
+    public func handleResponse(response: HTTPURLResponse) -> Bool {
+        guard let length = response.allHeaderFields["Content-Size"] as? String else { return false }
+        guard let lengthNum = Int(length) else { return false }
+        if(lengthNum == 0){
+            return false
+        }
+        let ok = response.statusCode == 200 || response.statusCode == 206
+        if(ok){
+            self.response = response
+        }
+        return ok
+    }
+    
+    public func handleData(data: Data) {
+        self.storage.append(name: self.name, data: data)
+    }
+    
+    public func handleComplete(error: Error?) {
+        if(error != nil){
+            
+        }
+    }
+    
+    private var storage:DataStorage = DataStorage()
+    
+    var size:UInt64
+    
+    var url:URL
+    
+    var response:URLResponse?
+    
+    weak var session:DownloadSession<DownloadTask>?
+    
+    public private(set) var name:String
+ 
+
+    public func download(){
+        
+    }
+    
+}
+
+public class DownloadSession<T:TaskHandle>:NSObject,URLSessionDataDelegate{
+    
+    var session:URLSession?
+    public init(configuration:URLSessionConfiguration){
+        super.init()
+        self.session = URLSession(configuration: configuration, delegate: self, delegateQueue: OperationQueue())
+    }
+    
+    var tasks:[Int:T] = [:]
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        tasks[task.taskIdentifier]?.handleComplete(error: error)
+    }
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        tasks[dataTask.taskIdentifier]?.handleData(data: data)
+    }
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        guard let http = response as? HTTPURLResponse else {
+            completionHandler(.cancel)
+            return
+        }
+        guard let result = tasks[dataTask.taskIdentifier]?.handleResponse(response: http) else {
+            completionHandler(.cancel)
+            return
+        }
+        completionHandler(result ? .allow : .cancel)
+    }
+    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        tasks.forEach { i in
+            i.value.handleComplete(error: error)
+        }
+        tasks.removeAll()
     }
     public func cancel(){
         
     }
-    public func download(){
+    public func request(url:URL) throws{
         
     }
 }
-
